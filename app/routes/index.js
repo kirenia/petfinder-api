@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const petRoutes = require("./petRoutes");
+const shelterRoutes = require("./shelterRoutes");
 
 router.get("/", (req, res) => {
   res
@@ -9,5 +10,6 @@ router.get("/", (req, res) => {
 });
 
 router.use("/pets", petRoutes);
+router.use("/shelters", shelterRoutes);
 
 module.exports = router;
