@@ -12,10 +12,12 @@ const shelterSchema = new mongoose.Schema({
     type: String,
     required: [true, "Shelter location is required"],
     maxlength: [200, "Shelter location cannot exceed 200 characters"],
+    unique: true, // ensure that the shelter location is unique in the database
   },
   phone: {
     type: String,
     maxlength: [20, "Shelter phone cannot exceed 20 characters"],
+    unique: true, // ensure that the shelter phone is unique in the database
   },
 });
 

@@ -33,14 +33,23 @@ const getShelterById = async (req, res) => {
 
 // POST
 const createShelter = async (req, res) => {
-  const shelter = req.body; // use req.body to access the data sent in the request body
-  console.log("Received shelter:", shelter); // log the received data to the console for debugging
-  const newShelter = await Shelters.create(shelter); // use the create method from the Shelters model to save the new shelter to the database
-  res.status(200).json({
-    success: true,
-    data: newShelter,
-    message: `${req.method} request received`,
-  }); // use req.method to dynamically display the HTTP method used in the request
+  try {
+    const shelter = req.body; // data from the request body
+    console.log("Received shelter:", shelter);
+    const newShelter = await Shelters.create(shelter); // save to database
+    res.status(201).json({
+      success: true,
+      data: newShelter,
+      message: `${req.method} request received`,
+    });
+  } catch (error) {
+    // validation errors (missing name, duplicate, etc)
+    res.status(400).json({
+      success: false,
+      message: "Error creating shelter",
+      error: error.message,
+    });
+  }
 };
 
 // PUT
