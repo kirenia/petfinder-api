@@ -21,6 +21,11 @@ const petSchema = new mongoose.Schema({
     required: [true, "Pet age is required"],
     min: [0, "Pet age cannot be negative"],
   },
+  shelter: {
+    type: mongoose.Schema.Types.ObjectId, // stores a MongoDB id
+    ref: "Shelter", // points to the Shelter model — THIS is the relationship
+    required: [true, "A pet must belong to a shelter"],
+  },
 });
 
 const Pet = mongoose.model("Pet", petSchema);

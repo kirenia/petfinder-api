@@ -1,78 +1,94 @@
 const Pets = require("../models/Pets");
+const messages = require("../messages/messages"); // hardcoded messages module
 
-//GET ALL
+// GET ALL — populate the shelter, hide __v
 const getAllPets = async (req, res) => {
-  const pets = await Pets.find(); // use the find method from the Pets model to retrieve all pets from the database
-  res.status(200).json({
-    success: true,
-    data: pets,
-    message: `${req.method} request to Pets endpoint received`,
-  }); // use req.method to dynamically display the HTTP method used in the request
+  try {
+    const pets = await Pets.find().populate("shelter").select("-__v");
+    res.status(200).json({
+      success: true,
+      data: pets,
+      message: `${req.method} request to Pets endpoint received`,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
 
-// GET BY ID
+// GET BY ID — populate the shelter, hide __v
 const getPetById = async (req, res) => {
-  const pet = await Pets.findById(req.params.id); // use the findById method from the Pets model to retrieve a pet by its ID from the database
-  if (!pet) {
-    return res.status(404).json({
-      success: false,
-      message: "Pet not found",
-    }); // return a 404 error if the pet is not found in the database
+  try {
+    const pet = await Pets.findById(req.params.id)
+      .populate("shelter")
+      .select("-__v");
+    if (!pet) {
+      return res
+        .status(404)
+        .json({ success: false, message: messages.PET_NOT_FOUND });
+    }
+    res.status(200).json({
+      success: true,
+      data: pet,
+      message: `${req.method} request to Pets endpoint received`,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
-  res.status(200).json({
-    success: true,
-    data: pet,
-    message: `${req.method} request to Pets endpoint received`,
-  }); // use req.method to dynamically display the HTTP method used in the request
-
-  const { id } = req.params; // use req.params to access the id parameter from the URL
-  res
-    .status(200)
-    .json({ id, success: true, message: `${req.method} request received` }); // use req.method to dynamically display the HTTP method used in the request
 };
 
-// POST
+// POST — create a pet (belongs to a shelter via shelter id in the body)
 const createPet = async (req, res) => {
-  const pet = req.body; // use req.body to access the data sent in the request body
-  console.log("Received pet:", pet); // log the received data to the console for debugging
-  const newPet = await Pets.create(pet); // use the create method from the Pets model to save the new pet to the database
-  res.status(200).json({
-    success: true,
-    data: newPet,
-    message: `${req.method} request received`,
-  }); // use req.method to dynamically display the HTTP method used in the request
+  try {
+    const newPet = await Pets.create(req.body);
+    res.status(201).json({
+      success: true,
+      data: newPet,
+      message: `${req.method} request received`,
+    });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
 };
 
-// PUT
+// PUT — update by id, return the updated pet
 const updatePet = async (req, res) => {
-  const pet = await Pets.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-  }); // use the findByIdAndUpdate method from the Pets model to update a pet by its ID in the database
-  if (!pet) {
-    return res.status(404).json({
-      success: false,
-      message: "Pet not found",
-    }); // return a 404 error if the pet is not found in the database
+  try {
+    const pet = await Pets.findByIdAndUpdate(req.params.id, req.body, {
+      returnDocument: "after",
+      runValidators: true,
+    });
+    if (!pet) {
+      return res
+        .status(404)
+        .json({ success: false, message: messages.PET_NOT_FOUND });
+    }
+    res.status(200).json({
+      success: true,
+      data: pet,
+      message: `${req.method} request to Pets endpoint received`,
+    });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
   }
-  const { id } = req.params; // use req.params to access the id parameter from the URL
-  res
-    .status(200)
-    .json({ id, success: true, message: `${req.method} request received` }); // use req.method to dynamically display the HTTP method used in the request
 };
 
-// DELETE
+// DELETE — remove by id, return the deleted pet
 const deletePet = async (req, res) => {
-  const pet = await Pets.findByIdAndDelete(req.params.id); // use the findByIdAndDelete method from the Pets model to delete a pet by its ID from the database
-  if (!pet) {
-    return res.status(404).json({
-      success: false,
-      message: "Pet not found",
-    }); // return a 404 error if the pet is not found in the database
+  try {
+    const pet = await Pets.findByIdAndDelete(req.params.id);
+    if (!pet) {
+      return res
+        .status(404)
+        .json({ success: false, message: messages.PET_NOT_FOUND });
+    }
+    res.status(200).json({
+      success: true,
+      data: pet,
+      message: `${req.method} request received`,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
-  const { id } = req.params; // use req.params to access the id parameter from the URL
-  res
-    .status(200)
-    .json({ id, success: true, message: `${req.method} request received` }); // use req.method to dynamically display the HTTP method used in the request
 };
 
 module.exports = {
