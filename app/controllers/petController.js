@@ -32,6 +32,12 @@ const getPetById = async (req, res) => {
       message: `${req.method} request to Pets endpoint received`,
     });
   } catch (error) {
+    // malformed id → clean 400 instead of raw Mongoose cast error
+    if (error.name === "CastError") {
+      return res
+        .status(400)
+        .json({ success: false, message: messages.INVALID_ID });
+    }
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -68,6 +74,12 @@ const updatePet = async (req, res) => {
       message: `${req.method} request to Pets endpoint received`,
     });
   } catch (error) {
+    // bad id → 400 clean message; other validation errors also 400
+    if (error.name === "CastError") {
+      return res
+        .status(400)
+        .json({ success: false, message: messages.INVALID_ID });
+    }
     res.status(400).json({ success: false, message: error.message });
   }
 };
@@ -87,6 +99,12 @@ const deletePet = async (req, res) => {
       message: `${req.method} request received`,
     });
   } catch (error) {
+    // bad id → clean 400 instead of raw Mongoose cast error
+    if (error.name === "CastError") {
+      return res
+        .status(400)
+        .json({ success: false, message: messages.INVALID_ID });
+    }
     res.status(500).json({ success: false, message: error.message });
   }
 };

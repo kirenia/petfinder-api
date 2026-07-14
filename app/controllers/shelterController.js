@@ -30,6 +30,12 @@ const getShelterById = async (req, res) => {
       message: `${req.method} request to Shelters endpoint received`,
     });
   } catch (error) {
+    // malformed id (not a valid ObjectId) → clean 400 instead of raw Mongoose error
+    if (error.name === "CastError") {
+      return res
+        .status(400)
+        .json({ success: false, message: messages.INVALID_ID });
+    }
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -44,7 +50,7 @@ const createShelter = async (req, res) => {
       message: `${req.method} request received`,
     });
   } catch (error) {
-    // validation errors (missing name, duplicate, etc.) land here
+    // validation errors (missing name, duplicate name) land here
     res.status(400).json({ success: false, message: error.message });
   }
 };
@@ -67,6 +73,12 @@ const updateShelter = async (req, res) => {
       message: `${req.method} request to Shelters endpoint received`,
     });
   } catch (error) {
+    // bad id → 400 clean message; other validation errors also 400
+    if (error.name === "CastError") {
+      return res
+        .status(400)
+        .json({ success: false, message: messages.INVALID_ID });
+    }
     res.status(400).json({ success: false, message: error.message });
   }
 };
@@ -86,6 +98,12 @@ const deleteShelter = async (req, res) => {
       message: `${req.method} request received`,
     });
   } catch (error) {
+    // bad id → clean 400 instead of raw Mongoose cast error
+    if (error.name === "CastError") {
+      return res
+        .status(400)
+        .json({ success: false, message: messages.INVALID_ID });
+    }
     res.status(500).json({ success: false, message: error.message });
   }
 };
