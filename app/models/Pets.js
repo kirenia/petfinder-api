@@ -4,15 +4,15 @@ const mongoose = require("mongoose");
 const petSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
+    required: [true, "Pet name is required"],
   },
   type: {
     type: String,
-    required: true,
+    required: [true, "Pet type is required"],
   },
   age: {
     type: Number,
-    required: true,
+    required: [true, "Pet age is required"],
   },
 });
 

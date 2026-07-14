@@ -1,14 +1,30 @@
 const Pets = require("../models/Pets");
 
 //GET ALL
-const getAllPets = (req, res) => {
-  res
-    .status(200)
-    .json({ success: true, message: `${req.method} request received` }); // use req.method to dynamically display the HTTP method used in the request
+const getAllPets = async (req, res) => {
+  const pets = await Pets.find(); // use the find method from the Pets model to retrieve all pets from the database
+  res.status(200).json({
+    success: true,
+    data: pets,
+    message: `${req.method} request to Pets endpoint received`,
+  }); // use req.method to dynamically display the HTTP method used in the request
 };
 
 // GET BY ID
-const getPetById = (req, res) => {
+const getPetById = async (req, res) => {
+  const pet = await Pets.findById(req.params.id); // use the findById method from the Pets model to retrieve a pet by its ID from the database
+  if (!pet) {
+    return res.status(404).json({
+      success: false,
+      message: "Pet not found",
+    }); // return a 404 error if the pet is not found in the database
+  }
+  res.status(200).json({
+    success: true,
+    data: pet,
+    message: `${req.method} request to Pets endpoint received`,
+  }); // use req.method to dynamically display the HTTP method used in the request
+
   const { id } = req.params; // use req.params to access the id parameter from the URL
   res
     .status(200)
@@ -28,7 +44,16 @@ const createPet = async (req, res) => {
 };
 
 // PUT
-const updatePet = (req, res) => {
+const updatePet = async (req, res) => {
+  const pet = await Pets.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  }); // use the findByIdAndUpdate method from the Pets model to update a pet by its ID in the database
+  if (!pet) {
+    return res.status(404).json({
+      success: false,
+      message: "Pet not found",
+    }); // return a 404 error if the pet is not found in the database
+  }
   const { id } = req.params; // use req.params to access the id parameter from the URL
   res
     .status(200)
@@ -36,7 +61,14 @@ const updatePet = (req, res) => {
 };
 
 // DELETE
-const deletePet = (req, res) => {
+const deletePet = async (req, res) => {
+  const pet = await Pets.findByIdAndDelete(req.params.id); // use the findByIdAndDelete method from the Pets model to delete a pet by its ID from the database
+  if (!pet) {
+    return res.status(404).json({
+      success: false,
+      message: "Pet not found",
+    }); // return a 404 error if the pet is not found in the database
+  }
   const { id } = req.params; // use req.params to access the id parameter from the URL
   res
     .status(200)
