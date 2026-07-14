@@ -1,4 +1,6 @@
-//GET
+const Pets = require("../models/Pets");
+
+//GET ALL
 const getAllPets = (req, res) => {
   res
     .status(200)
@@ -14,10 +16,15 @@ const getPetById = (req, res) => {
 };
 
 // POST
-const createPet = (req, res) => {
-  res
-    .status(200)
-    .json({ success: true, message: `${req.method} request received` }); // use req.method to dynamically display the HTTP method used in the request
+const createPet = async (req, res) => {
+  const pet = req.body; // use req.body to access the data sent in the request body
+  console.log("Received pet:", pet); // log the received data to the console for debugging
+  const newPet = await Pets.create(pet); // use the create method from the Pets model to save the new pet to the database
+  res.status(200).json({
+    success: true,
+    data: newPet,
+    message: `${req.method} request received`,
+  }); // use req.method to dynamically display the HTTP method used in the request
 };
 
 // PUT
