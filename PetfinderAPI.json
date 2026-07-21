@@ -1,0 +1,612 @@
+{
+  "info": {
+    "_postman_id": "32fbbf8e-cfcf-4c77-bae7-13b863ec2a2a",
+    "name": "Petfinder API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "55540364",
+    "_collection_link": "https://go.postman.co/collection/55540364-32fbbf8e-cfcf-4c77-bae7-13b863ec2a2a?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Pets",
+      "item": [
+        {
+          "name": "All Pets",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 (OK)\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response reports success\", function () {",
+                  "    const responseBody = pm.response.json();",
+                  "    pm.expect(responseBody.success).to.eql(true);",
+                  "});",
+                  "",
+                  "pm.test(\"Each pet has a non-empty name and a populated shelter\", function () {",
+                  "    const responseBody = pm.response.json();",
+                  "    const pets = responseBody.data;",
+                  "    pm.expect(pets).to.be.an('array');",
+                  "",
+                  "    pets.forEach((pet) => {",
+                  "        pm.expect(pet.name).to.be.a('string').and.to.not.be.empty;",
+                  "        pm.expect(pet.shelter).to.have.property('name');",
+                  "    });",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/pets/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "pets",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pet by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 (OK)\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Returns the pet I asked for\", function () {",
+                  "    const responseBody = pm.response.json();",
+                  "    pm.expect(responseBody.data._id).to.eql(pm.collectionVariables.get(\"petId\"));",
+                  "});",
+                  "",
+                  "pm.test(\"Shelter is populated with full object\", function () {",
+                  "    const { data } = pm.response.json();",
+                  "    pm.expect(data.shelter).to.have.property('_id');",
+                  "    pm.expect(data.shelter).to.have.property('name');",
+                  "    pm.expect(data.shelter.name).to.be.a('string');",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/pets/{{petId}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "pets",
+                "{{petId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Pet",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201 (Created)\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has created resource ID\", function () {",
+                  "    const responseBody = pm.response.json();",
+                  "    pm.expect(responseBody.data).to.have.property(\"_id\").that.is.not.null;",
+                  "    pm.expect(responseBody.data._id).to.have.lengthOf(24);",
+                  "",
+                  "    pm.collectionVariables.set(\"petId\", responseBody.data._id);",
+                  "});",
+                  "",
+                  "pm.test(\"The response has all properties\", function () {",
+                  "    const { data } = pm.response.json();",
+                  "    pm.expect(data.name).to.be.a('string');",
+                  "    pm.expect(data.name).to.eql(\"Luna\");",
+                  "    pm.expect(data.type).to.eql(\"Cat\");",
+                  "    pm.expect(data.age).to.be.a('number');",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Luna\",\n  \"type\": \"Cat\",\n  \"age\": 3,\n  \"shelter\": \"{{shelterId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/pets/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "pets",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Pet",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 (OK)\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Age was updated to 5\", function () {",
+                  "    const responseBody = pm.response.json();",
+                  "    pm.expect(responseBody.data.age).to.eql(5);",
+                  "});",
+                  "",
+                  "pm.test(\"Other properties survived the update\", function () {",
+                  "    const { data } = pm.response.json();",
+                  "    pm.expect(data.name).to.eql(\"Luna\");",
+                  "    pm.expect(data.type).to.eql(\"Cat\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"age\": 5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/pets/{{petId}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "pets",
+                "{{petId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Pet",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 (OK)\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Returns the deleted pet\", function () {",
+                  "    const responseBody = pm.response.json();",
+                  "    pm.expect(responseBody.data._id).to.eql(pm.collectionVariables.get(\"petId\"));",
+                  "});",
+                  "",
+                  "pm.test(\"Response reports success\", function () {",
+                  "    const responseBody = pm.response.json();",
+                  "    pm.expect(responseBody.success).to.eql(true);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/v1/pets/{{petId}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "pets",
+                "{{petId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Shelters",
+      "item": [
+        {
+          "name": "All Shelters",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 (OK)\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response reports success\", function () {",
+                  "    const responseBody = pm.response.json();",
+                  "    pm.expect(responseBody.success).to.eql(true);",
+                  "});",
+                  "",
+                  "pm.test(\"Each shelter has a non-empty name property\", function () {",
+                  "    const responseBody = pm.response.json();",
+                  "    const shelters = responseBody.data;",
+                  "    pm.expect(shelters).to.be.an('array');",
+                  "",
+                  "    shelters.forEach((shelter) => {",
+                  "        pm.expect(shelter.name).to.be.a('string').and.to.not.be.empty;",
+                  "    });",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/v1/shelters/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "shelters",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Shelter by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 (OK)\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Returns the shelter I asked for\", function () {",
+                  "    const responseBody = pm.response.json();",
+                  "    pm.expect(responseBody.data._id).to.eql(pm.collectionVariables.get(\"shelterId\"));",
+                  "});",
+                  "",
+                  "pm.test(\"The response has all properties\", function () {",
+                  "    const { data } = pm.response.json();",
+                  "    pm.expect(data.name).to.be.a('string');",
+                  "    pm.expect(data.location).to.be.a('string');",
+                  "    pm.expect(data.phone).to.be.a('string');",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"208-555-9999\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/shelters/{{shelterId}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "shelters",
+                "{{shelterId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Shelter",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201 (Created)\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has created resource ID\", function () {",
+                  "    const responseBody = pm.response.json();",
+                  "    pm.expect(responseBody.data).to.have.property(\"_id\").that.is.not.null;",
+                  "    pm.expect(responseBody.data._id).to.have.lengthOf(24);",
+                  "",
+                  "    pm.collectionVariables.set(\"shelterId\", responseBody.data._id);",
+                  "});",
+                  "",
+                  "pm.test(\"The response has all properties\", function () {",
+                  "    const { data } = pm.response.json();",
+                  "    pm.expect(data.name).to.be.a('string');",
+                  "    pm.expect(data.name).to.eql(\"Idaho Falls Pet Shelter\");",
+                  "    pm.expect(data.location).to.be.a('string');",
+                  "    pm.expect(data.phone).to.be.a('string');",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Idaho Falls Pet Shelter\",\n  \"location\": \"Idaho Falls, ID\",\n  \"phone\": \"208-545-0200\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/shelters",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "shelters"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Shelter",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 (OK)\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Phone number was updated\", function () {",
+                  "    const responseBody = pm.response.json();",
+                  "    pm.expect(responseBody.data.phone).to.eql(\"208-555-9999\");",
+                  "});",
+                  "",
+                  "pm.test(\"Other properties survived the update\", function () {",
+                  "    const { data } = pm.response.json();",
+                  "    pm.expect(data.name).to.be.a('string');",
+                  "    pm.expect(data.location).to.be.a('string');",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"208-555-9999\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/shelters/{{shelterId}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "shelters",
+                "{{shelterId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Shelter",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 (OK)\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Returns the deleted shelter\", function () {",
+                  "    const responseBody = pm.response.json();",
+                  "    pm.expect(responseBody.data._id).to.eql(pm.collectionVariables.get(\"shelterId\"));",
+                  "});",
+                  "",
+                  "pm.test(\"Response reports success\", function () {",
+                  "    const responseBody = pm.response.json();",
+                  "    pm.expect(responseBody.success).to.eql(true);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/v1/shelters/{{shelterId}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "shelters",
+                "{{shelterId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "shelterId",
+      "value": ""
+    },
+    {
+      "key": "petId",
+      "value": ""
+    }
+  ]
+}
