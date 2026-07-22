@@ -16,6 +16,12 @@ const shelterSchema = new mongoose.Schema({
     type: String,
     maxlength: [20, "Shelter phone cannot exceed 20 characters"],
   },
+  pets: [
+    {
+      type: mongoose.Schema.Types.ObjectId, // each entry is a pet id
+      ref: "Pet", // points to the pet model
+    },
+  ],
 });
 
 const Shelter = mongoose.model("Shelter", shelterSchema);

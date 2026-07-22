@@ -4,11 +4,44 @@ const messages = require("../messages/messages"); // hardcoded messages module
 // GET ALL — populate the shelter, hide __v
 const getAllPets = async (req, res) => {
   try {
-    const pets = await Pets.find().populate("shelter").select("-__v");
+    // filter $gte and $lte for age range from query string
+    const filter = {};
+    if (req.query.minAge || req.query.maxAge) {
+      filter.age = {};
+      if (req.query.minAge) filter.age.$gte = Number(req.query.minAge);
+      if (req.query.maxAge) filter.age.$lte = Number(req.query.maxAge);
+    }
+
+    // pagination
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    // build query
+    let query = Pets.find(filter).populate("shelter");
+
+    // select
+    if (req.query.select) {
+      query = query.select(req.query.select.split(",").join(" "));
+    } else {
+      query = query.select("-__v"); // default: just hide the version key
+    }
+
+    // sort
+    if (req.query.sort) {
+      query = query.sort(req.query.sort.split(",").join(" "));
+    }
+
+    // run with pagination
+    const pets = await query.skip(skip).limit(limit);
+    const total = await Pets.countDocuments(filter);
     res.status(200).json({
       success: true,
       data: pets,
       message: `${req.method} request to Pets endpoint received`,
+      count: pets.length,
+      total,
+      pages: Math.ceil(total / limit),
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
