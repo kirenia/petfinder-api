@@ -1,7 +1,7 @@
 const Shelters = require("../models/Shelters");
 const messages = require("../messages/messages"); // hardcoded messages module
 
-// GET ALL — hide __v
+// GET ALL
 const getAllShelters = async (req, res) => {
   try {
     // filter

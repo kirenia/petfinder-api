@@ -1,10 +1,10 @@
 const Pets = require("../models/Pets");
 const messages = require("../messages/messages"); // hardcoded messages module
 
-// GET ALL — populate the shelter, hide __v
+// GET ALL
 const getAllPets = async (req, res) => {
   try {
-    // filter $gte and $lte for age range from query string
+    // filter
     const filter = {};
     if (req.query.minAge || req.query.maxAge) {
       filter.age = {};
@@ -24,7 +24,7 @@ const getAllPets = async (req, res) => {
     if (req.query.select) {
       query = query.select(req.query.select.split(",").join(" "));
     } else {
-      query = query.select("-__v"); // default: just hide the version key
+      query = query.select("-__v");
     }
 
     // sort
