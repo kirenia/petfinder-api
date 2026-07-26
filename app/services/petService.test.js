@@ -1,3 +1,4 @@
+// app/services/petService.test.js
 const petService = require("./petService");
 const mongoose = require("mongoose");
 require("dotenv").config();
@@ -13,7 +14,6 @@ describe("Pet Service", () => {
     await mongoose.connection.close();
   });
 
-  // test the getAllPetsService function
   describe("getAllPetsService", () => {
     it("should return all pets with default pagination", async () => {
       const queryParams = {};
@@ -24,7 +24,6 @@ describe("Pet Service", () => {
       expect(result).toHaveProperty("limit", 10);
     });
 
-    // test filtering by age range
     it("should filter pets by age range", async () => {
       const queryParams = { minAge: 2, maxAge: 5 };
       const result = await petService.getAllPetsService(queryParams);
@@ -34,7 +33,6 @@ describe("Pet Service", () => {
       });
     });
 
-    // test selecting specific fields
     it("should select specific fields", async () => {
       const queryParams = { select: "name,type" };
       const result = await petService.getAllPetsService(queryParams);
@@ -45,7 +43,6 @@ describe("Pet Service", () => {
       });
     });
 
-    // test sorting by age in descending order
     it("should sort pets by age in descending order", async () => {
       const queryParams = { sort: "-age" };
       const result = await petService.getAllPetsService(queryParams);
@@ -55,7 +52,6 @@ describe("Pet Service", () => {
       }
     });
 
-    // test sorting by age in ascending order
     it("should sort pets by age in ascending order", async () => {
       const queryParams = { sort: "age" };
       const result = await petService.getAllPetsService(queryParams);
