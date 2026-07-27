@@ -1,0 +1,67 @@
+/* client/src/index.css */
+/* i used Catppuccin Latte (light) for its coziness */
+
+body {
+  margin: 0;
+  /* Latte base */
+  background: #eff1f5;
+  /* Latte text */
+  color: #4c4f69;
+  font-family: system-ui, sans-serif;
+}
+
+h1 {
+  /* Latte mauve */
+  color: #8839ef;
+}
+
+h2 {
+  /* Latte pink ♡ */
+  color: #ea76cb;
+}
+
+section {
+  /* Latte mantle */
+  background: #e6e9ef;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #7287fd; /* Latte lavender */
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  /* space out each row and push edit/delete to the right */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #ccd0da; /* Latte surface0 — subtle divider */
+}
+
+input,
+select,
+button {
+  padding: 0.4rem;
+  border: 1px solid #7287fd; /* Latte lavender */
+  background: #eff1f5; /* Latte base */
+  color: #4c4f69; /* Latte text */
+  font-family: inherit;
+}
+
+button {
+  cursor: pointer;
+  /* Latte mauve button */
+  background: #8839ef;
+  color: #eff1f5;
+  border: 1px solid #8839ef;
+}
+
+button:hover {
+  /* Latte pink on hover ♡ */
+  background: #ea76cb;
+  border-color: #ea76cb;
+}
