@@ -11,27 +11,27 @@ import {
 } from "./api";
 
 function App() {
-  // state to hold our data from the backend
+  // the actual data from the backend
   const [pets, setPets] = useState([]);
   const [shelters, setShelters] = useState([]);
 
-  // PET form state
+  // pet form fields
   const [petName, setPetName] = useState("");
   const [petType, setPetType] = useState("Dog");
   const [petAge, setPetAge] = useState("");
   const [petShelter, setPetShelter] = useState("");
 
-  // SHELTER form state
+  // shelter form fields
   const [shelterName, setShelterName] = useState("");
   const [shelterLocation, setShelterLocation] = useState("");
   const [shelterPhone, setShelterPhone] = useState("");
 
-  // track which pet is being edited and the edited values
+  // which pet i'm editing right now + its edited values
   const [editingId, setEditingId] = useState(null);
   const [editName, setEditName] = useState("");
   const [editAge, setEditAge] = useState("");
 
-  // fetch pets and shelters once when the app loads
+  // grab everything from the backend when the app first loads
   useEffect(() => {
     getPets()
       .then((res) => setPets(res.data.data))
@@ -42,9 +42,11 @@ function App() {
       .catch((err) => console.error("Error loading shelters:", err));
   }, []);
 
-  // create a new pet, then refresh the list
+  // ===== PET CRUD =====
+
+  // CREATE a pet then re-pull the list so it shows up
   const handleAddPet = async (e) => {
-    e.preventDefault(); // stop the page from reloading on submit
+    e.preventDefault(); // don't let the page reload on submit
     try {
       const newPet = {
         name: petName,
@@ -52,11 +54,10 @@ function App() {
         age: Number(petAge),
         shelter: petShelter,
       };
-      await createPet(newPet); // POST to the backend
-      // refetch pets so the new one shows up
+      await createPet(newPet); // POST it
       const res = await getPets();
       setPets(res.data.data);
-      // clear the form
+      // wipe the form
       setPetName("");
       setPetAge("");
       setPetShelter("");
@@ -65,7 +66,26 @@ function App() {
     }
   };
 
-  // delete a pet, then refresh the list
+  // UPDATE — drop the pet's current values into the edit fields first
+  const startEdit = (pet) => {
+    setEditingId(pet._id);
+    setEditName(pet.name);
+    setEditAge(pet.age);
+  };
+
+  // UPDATE — send the edits, refresh, then get out of edit mode
+  const handleUpdatePet = async (id) => {
+    try {
+      await updatePet(id, { name: editName, age: Number(editAge) });
+      const res = await getPets();
+      setPets(res.data.data);
+      setEditingId(null);
+    } catch (err) {
+      console.error("Error updating pet:", err);
+    }
+  };
+
+  // DELETE a pet then refresh
   const handleDeletePet = async (id) => {
     try {
       await deletePet(id);
@@ -76,26 +96,9 @@ function App() {
     }
   };
 
-  // start editing a pet — load its current values into the edit form
-  const startEdit = (pet) => {
-    setEditingId(pet._id);
-    setEditName(pet.name);
-    setEditAge(pet.age);
-  };
+  // ===== SHELTER CRUD =====
 
-  // save the edited pet, then refresh the list
-  const handleUpdatePet = async (id) => {
-    try {
-      await updatePet(id, { name: editName, age: Number(editAge) });
-      const res = await getPets();
-      setPets(res.data.data);
-      setEditingId(null); // exit edit mode
-    } catch (err) {
-      console.error("Error updating pet:", err);
-    }
-  };
-
-  // CREATE SHELTER
+  // CREATE a shelter then refresh
   const handleAddShelter = async (e) => {
     e.preventDefault();
     try {
@@ -114,7 +117,7 @@ function App() {
     }
   };
 
-  // delete a shelter, then refresh the list
+  // DELETE a shelter then refresh
   const handleDeleteShelter = async (id) => {
     try {
       await deleteShelter(id);
@@ -205,7 +208,7 @@ function App() {
           {pets.map((pet) => (
             <li key={pet._id}>
               {editingId === pet._id ? (
-                // edit mode — show inputs
+                // edit mode — swap in the inputs
                 <>
                   <input
                     value={editName}
